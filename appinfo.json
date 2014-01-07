@@ -1,0 +1,36 @@
+{
+    "versionLabel": "1.0.1",
+    "uuid": "33aa58c4-5047-4023-97e7-1d614799f05d",
+    "appKeys": {},
+    "longName": "Sword Art Online",
+    "versionCode": 2,
+    "capabilities": [
+        ""
+    ],
+    "shortName": "Sword Art Online",
+    "companyName": "Joe Diragi",
+    "watchapp": {
+        "watchface": true
+    },
+    "resources": {
+        "media": [
+            {
+                "characterRegex": "[0-9 A-Z a-z : % ]",
+                "type": "font",
+                "name": "FONT_SWAG_15",
+                "file": "fonts/juliusblackregular.ttf"
+            },
+            {
+                "characterRegex": "[0-9 A-Z a-z : % ]",
+                "type": "font",
+                "name": "FONT_SWAG_20",
+                "file": "fonts/juliusblackregular.ttf"
+            },
+            {
+                "type": "png",
+                "name": "sao_background",
+                "file": "images/Untitled.png"
+            }
+        ]
+    }
+}
