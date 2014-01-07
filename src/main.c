@@ -7,6 +7,8 @@ static TextLayer *battery;
 static TextLayer *date;
 static GBitmap *SAO;
 static BitmapLayer* SAO_Layer;
+static GBitmap *bt_connected;
+static BitmapLayer* bt_connected_layer;
 static GFont font;
 static GFont font15;
 
@@ -24,6 +26,19 @@ void handle_battery(BatteryChargeState charge_state) {
 		
 	}
 	text_layer_set_text(battery, battery_text);
+}
+
+void handle_bt(bool connected)
+{
+	
+	if (connected == 1){
+		bt_connected = gbitmap_create_with_resource(RESOURCE_ID_bt_connected);
+		bitmap_layer_set_bitmap(bt_connected_layer, bt_connected);
+	} else {
+		bt_connected = gbitmap_create_with_resource(RESOURCE_ID_bt_disconnected);
+		bitmap_layer_set_bitmap(bt_connected_layer, bt_connected);
+	}
+	
 }
 
 
@@ -69,7 +84,7 @@ static void window_load(Window *window)
     layer_add_child(window_layer, text_layer_get_layer(date));
 	
 	//Set up text (Battery)
-	battery = text_layer_create(GRect(120,0,60,40));
+	battery = text_layer_create(GRect(105,0,60,40));
 	text_layer_set_font(battery, font15);
     text_layer_set_background_color(battery, GColorBlack);
     text_layer_set_text_color(battery, GColorWhite);
@@ -84,6 +99,12 @@ static void window_load(Window *window)
     text_layer_set_text_alignment(time_text, GTextAlignmentCenter);
     layer_add_child(window_layer, text_layer_get_layer(time_text));
 	
+	//Set up Bluetooth
+	bt_connected = gbitmap_create_with_resource(RESOURCE_ID_bt_disconnected);
+	bt_connected_layer = bitmap_layer_create(GRect(115, 135, 40, 40));
+	bitmap_layer_set_background_color(bt_connected_layer, GColorBlack);
+	layer_add_child(window_layer, bitmap_layer_get_layer(bt_connected_layer));
+	
 	struct tm *t;
 	time_t temp;
 	temp = time(NULL);
@@ -93,6 +114,10 @@ static void window_load(Window *window)
 	//get battery
 	BatteryChargeState btchg = battery_state_service_peek();
 	handle_battery(btchg);
+	
+	//set bluetooth status
+	bool connected = bluetooth_connection_service_peek();
+	handle_bt(connected);
 	
 }
 
@@ -110,6 +135,7 @@ static void init(void) {
 	window = window_create();
 	tick_timer_service_subscribe(MINUTE_UNIT, (TickHandler) tick_handler);
 	battery_state_service_subscribe(&handle_battery);
+	bluetooth_connection_service_subscribe(&handle_bt);
 	window_set_background_color(window, GColorBlack);
 	window_set_window_handlers(window, (WindowHandlers) {
 		.load = window_load,
@@ -129,9 +155,12 @@ static void deinit(void)
 {
 	
 	gbitmap_destroy(SAO);
+	gbitmap_destroy(bt_connected);
 	bitmap_layer_destroy(SAO_Layer);
+	bitmap_layer_destroy(bt_connected_layer);
 	tick_timer_service_unsubscribe();
 	battery_state_service_unsubscribe();
+	bluetooth_connection_service_unsubscribe();
 	window_destroy(window);
 	
 }
